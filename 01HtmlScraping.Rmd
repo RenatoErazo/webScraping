@@ -1,0 +1,201 @@
+---
+title: "HtmlWebScraping"
+author: "Renato Erazo"
+date: "5/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ===== 05 Web Scraping in R 5 01 2021
+```{r}
+install.packages("rvest")
+library(rvest)
+```
+
+
+Read in HTML
+Take a look at the following excerpt from a website:
+
+Web Scraping is cool
+It involves writing code – be it R or Python.
+
+DataCamp has courses on it.
+
+The corresponding HTML is provided to you in the html_excerpt_raw variable.
+In this exercise you'll use rvest to read it into R, so you can work with it.
+
+As you are working with the rvest package during this entire course, it will always have been preloaded for you with the library(rvest) command.
+
+
+```{r}
+html_excerpt_raw <- '
+<html> 
+  <body> 
+    <h1>Web scraping is cool</h1>
+    <p>It involves writing code – be it R or Python.</p>
+    <p>DataCamp has courses on it.</p>
+  </body> 
+</html>'
+# Turn the raw excerpt into an HTML document R understands
+html_excerpt <- read_html(html_excerpt_raw)
+html_excerpt
+```
+
+Alter the contents of html_excerpt_raw to turn "DataCamp" in the second paragraph into a link that points to https://datacamp.com.
+
+```{r}
+html_excerpt_raw <- '
+<html> 
+  <body> 
+    <h1>Web scraping is cool</h1>
+    <p>It involves writing code – be it R or Python.</p>
+    <p><a href="https://datacamp.com">DataCamp</a>
+		has courses on it.</p>
+  </body> 
+</html>'
+# Turn the raw excerpt into an HTML document R understands
+html_excerpt <- read_html(html_excerpt_raw)
+html_excerpt
+```
+
+
+Use the xml_structure() function to get a better overview of the tag hierarchy of the HTML excerpt.
+
+```{r}
+html_excerpt_raw <- '
+<html> 
+  <body> 
+    <h1>Web scraping is cool</h1>
+    <p>It involves writing code – be it R or Python.</p>
+    <p><a href="https://datacamp.com">DataCamp</a> 
+		has courses on it.</p>
+  </body> 
+</html>'
+# Turn the raw excerpt into an HTML document R understands
+html_excerpt <- read_html(html_excerpt_raw)
+html_excerpt
+# Print the HTML excerpt with the xml_structure() function
+xml_structure(html_excerpt)
+```
+Select all children of a list
+Given the following ordered list (using the ol element), which is stored as list_html_raw:
+
+Learn HTML
+Learn CSS
+Learn R
+Scrape everything!*
+*Do it responsibly!
+
+In this exercise, you'll learn to apply the rvest function that allows you to directly select children of a certain node.
+
+2.- Extract the ol node from the list_html document, using the singular version of the rvest function that can be used to query nodes.
+
+3.- Lastly, extract all the children of the ol_node using yet another function from rvest, and print them directly to the console.
+
+
+```{r}
+list_html_raw <- "\n<html>\n  <body>\n    <ol>\n      <li>Learn HTML</li>\n      <li>Learn CSS</li>\n      <li>Learn R</li>\n      <li>Scrape everything!*</li>\n    </ol>\n    <small>*Do it responsibly!</small>\n  </body>\n</html>"
+
+# Read in the corresponding HTML string
+
+
+library(rvest)
+list_html <- read_html(list_html_raw)
+
+# Extract the ol node
+ol_node <- list_html %>% html_node('ol')
+
+
+# Extract and print the nodeset of all the children of ol_node
+ol_node %>% html_children()
+
+
+```
+
+Parse hyperlinks into a data frame
+Have a look at the following ul-list of "helpful links":
+
+Helpful links
+Wikipedia
+Dictionary
+Search Engine
+Compiled with help from Google.
+
+The corresponding HTML code is available as a string in hyperlink_html.
+
+In this exercise, you'll parse these links into an R data frame. You'll use tibble(), a function from the Tidyverse, for that. tibble() is basically a trimmed down version of data.frame(), which you certainly already know. Just like data.frame(), you specify column names and data as key-value-pairs, like so:
+
+my_tibble <- tibble(
+  column_name_1 = data_1,
+  column_name_2 = data_2,
+  ...
+)
+Instructions
+100 XP
+Instructions
+100 XP
+Extract all the a nodes from the bulleted list with the rvest function(s) introduced in the video.
+Make sure not to extract the last link to Google, as it is not part of the bulleted list.
+Parse both the domain (href attribute) and the link name (text node) into a data frame with columns domain and name,
+
+
+```{r}
+hyperlink_html <- "\n<html>\n  <body>\n    <h3>Helpful links</h3>\n    <ul>\n      <li><a href=\"https://wikipedia.org\">Wikipedia</a></li>\n      <li><a href=\"https://dictionary.com\">Dictionary</a></li>\n      <li><a href=\"https://duckduckgo.com\">Search Engine</a></li>\n    </ul>\n    <small>\n      Compiled with help from <a href=\"https://google.com\">Google</a>.\n    </small>\n  </body>\n</html>"
+
+# Extract all the a nodes from the bulleted list
+links <- hyperlink_html %>% 
+  read_html() %>%
+  html_nodes('li a')
+
+# Parse the nodes into a data frame
+library(tidyverse)
+link_df <- tibble(
+  domain = links %>% html_attr('href'),
+  name = links %>% html_text()
+)
+
+link_df
+link_df
+```
+
+Exercise
+Select multiple HTML types
+As you have seen in the video, CSS can be used to style a web page. In the most basic form, this happens via type selectors, where styles are defined for and applied to all HTML elements of a certain type. In turn, you can also use type selectors to scrape pages for specific HTML elements.
+
+As demonstrated in the video, you can also combine multiple type selectors via a comma, i.e. with html_nodes("type1, type2"). This selects all elements that have type1 or type2.
+
+Have a look at the following HTML:
+
+<html> 
+  <body> 
+    <div>Python is perfect for programming.</div>
+    <p>Still, R might be better suited for data analysis.</p>
+    <small>(And has prettier charts, too.)</small>
+  </body> 
+</html>
+The raw HTML code is provided to you in the variable languages_raw_html.
+
+
+Instructions
+100 XP
+Read in languages_html_raw.
+Using the method shown above, select all div and p elements in this HTML.
+
+
+```{r}
+languages_raw_html <- "\n<html> \n  <body> \n    <div>Python is perfect for programming.</div>\n    <p>Still, R might be better suited for data analysis.</p>\n    <small>(And has prettier charts, too.)</small>\n  </body> \n</html>"
+library(rvest)
+
+
+# Read in the HTML
+languages_html <- read_html(languages_raw_html)
+# Select the div and p tags and print their text
+languages_html %>%
+	html_nodes('div,p') %>% html_text()
+```
+
+
+
