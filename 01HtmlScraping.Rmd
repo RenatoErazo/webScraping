@@ -197,5 +197,164 @@ languages_html %>%
 	html_nodes('div,p') %>% html_text()
 ```
 
+##===========================  Navigation and Selection with CSS
 
+Exercise
+Leverage the uniqueness of IDs
+As you know, IDs should be unique across a web page. If you can make sure this is the case, it can reduce the complexity of your scraping selectors drastically.
+
+Here's the structure of an HTML page you might encounter in the wild:
+
+<html>
+  <body>
+    <div id = 'first'>
+      <h1 class = 'big'>Joe Biden</h1>
+      <p class = 'first blue'>Democrat</p>
+      <p class = 'second blue'>Male</p>
+    </div>
+    <div id = 'second'>...</div>
+    <div id = 'third'>
+      <h1 class = 'big'>Donald Trump</h1>
+      <p class = 'first red'>Republican</p>
+      <p class = 'second red'>Male</p>
+    </div>
+  </body>
+</html>
+It has been read in for you with read_html() and is available through structured_html.
+
+Instructions
+100 XP
+Using html_nodes(), find the shortest possible selector to select the first div in structured_html.
+
+
+```{r}
+
+library(rvest)
+
+datoHtml <- "<html>
+  <body>
+    <div id = 'first'>
+      <h1 class = 'big'>Joe Biden</h1>
+      <p class = 'first blue'>Democrat</p>
+      <p class = 'second blue'>Male</p>
+    </div>
+    <div id = 'second'>...</div>
+    <div id = 'third'>
+      <h1 class = 'big'>Donald Trump</h1>
+      <p class = 'first red'>Republican</p>
+      <p class = 'second red'>Male</p>
+    </div>
+  </body>
+</html>"
+
+structured_html <- read_html(datoHtml)
+
+# Select the first div
+structured_html %>% html_nodes('#first')
+```
+
+
+Select the last child with a pseudo-class
+In the following HTML showing the author of a text in the last paragraph, there are two groups of p nodes:
+
+<html>
+  <body>
+    <div>
+      <p class = 'text'>A sophisticated text [...]</p>
+      <p class = 'text'>Another paragraph following [...]</p>
+      <p class = 'text'>Author: T.G.</p>
+    </div>
+    <p>Copyright: DC</p>
+  </body>
+</html>
+In this exercise, your job is to select the last p node within the div.
+
+As you learned in the video, pseudo-classes can help you whenever you don't have other means of selecting a specific node of page, e.g., through an ID selector or a unique class.
+
+The above HTML document is provided to you through the nested_html variable (already read in via read_html()).
+
+Instructions 1/2
+50 XP
+1
+In a first attempt, use the pseudo-class that selects the last child to scrape the last p in each group.
+
+Take Hint (-15 XP)
+2
+As this selected the last p node from both groups, make use of the text class to get only the authorship information.
+
+
+```{r}
+library(rvest)
+
+nested_html <- read_html("<html>
+  <body>
+    <div>
+      <p class = 'text'>A sophisticated text [...]</p>
+      <p class = 'text'>Another paragraph following [...]</p>
+      <p class = 'text'>Author: T.G.</p>
+    </div>
+    <p>Copyright: DC</p>
+  </body>
+</html>")
+
+
+
+# Select the last child of each p group
+nested_html %>%
+	html_nodes('p:last-child')
+
+
+
+# This time for real: Select only the last node of the p's wrapped by the div
+nested_html  %>% 
+	html_nodes('p.text:last-child')
+```
+
+# Extract the text of all list elements
+First, gatther all the li elements in the nested list shown above
+ande print theri text
+
+
+```{r}
+library(rvest)
+
+languages_html <- read_html("  <ul id = 'languages'>
+    <li>SQL</li>
+    <ul>    
+      <li>Databases</li>
+      <li>Query Language</li>
+    </ul>
+    <li>R</li>
+    <ul>
+      <li>Collection</li>
+      <li>Analysis</li>
+      <li>Visualization</li>
+    </ul>
+    <li>Python</li>
+  </ul>")
+
+
+# Extract the text of all list elements
+languages_html %>% 
+	html_nodes('#languages li') %>% 
+	html_text()
+
+
+```
+
+Unlike before, try to extract only direct descendants of the top-level ul element, using the child combinator.
+
+
+```{r}
+# Extract only the text of the computer languages (without the sub lists)
+languages_html %>% 
+	html_nodes('ul#languages >li') %>% 
+	html_text()
+```
+
+
+
+```{r}
+
+```
 
